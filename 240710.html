@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD240711</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        width: 50px;
+        height: 50px;
+        border: 1px solid black;
+        padding: 0;
+        text-align: center;
+    }
+</style>
+
+<body>
+    행 <input id="inputRow" value="3">
+    열 <input id="inputCol" value="2">
+    <button id="btnDraw">그리기</button>
+    <br>
+    <br>
+    <button id="btnOpenRight">오른쪽으로 펼치기</button>
+    <button id="btnOpenDown">아래로 펼치기</button>
+    <br>
+    <br>
+    cell을 눌러서 구멍 뚫기
+    <br><br>
+    <table id="tbl">
+    </table>
+    <script>
+        let holds = []
+        let curRowSize
+        let curColSize
+        function funcDrawButton() {
+            let row = $('#inputRow').val();
+            let col = $('#inputCol').val();
+            curRowSize = Number(row)
+            curColSize = Number(col)
+            for (let r = 0; r < curRowSize; r++) {
+                holds[r]=[]
+                for (let c = 0; c < curColSize; c++) {
+                    holds[r][c]=0
+                }                
+            }
+            for (let i = 0; i < curRowSize*curColSize/2; i++) {
+                r = Math.floor(Math.random()*curRowSize)
+                c = Math.floor(Math.random()*curColSize)
+                holds[r][c]=1
+            }
+            funcDrawTable()
+        }
+
+        funcDrawButton()
+
+        function funcTD(row, col) {
+            if (holds[row][col] == 1) {
+                holds[row][col] = 0
+            } else {
+                holds[row][col] = 1
+            }
+            funcFillTable()
+
+        }
+        function funcFillTable()
+        {
+            for (let row in holds) {
+                for (let col in holds[row]) {
+                    if (holds[row][col] == 1) {
+                        $('#td_' + row + "_" + col).html('O')
+                    }
+                    else {
+                        $('#td_' + row + "_" + col).html(' ')
+                    }
+                }
+            }
+
+        }
+
+        function funcDrawTable() {
+            $('#tbl').empty();
+            for (let i = 0; i < curRowSize; i++) {
+                let tr = document.createElement("tr")
+                $('#tbl').append(tr)
+                for (let j = 0; j < curColSize; j++) {
+                    let td = document.createElement("td")
+                    tr.appendChild(td)
+                    td.id = "td_" + i + "_" + j
+                    $(td).on("click", function () {
+                        funcTD(i, j)
+                    })
+                }
+            }
+            funcFillTable()
+        }
+        $('#btnDraw').on('click', funcDrawButton)
+
+        $('#btnOpenRight').on('click', function () {
+            for (let row = 0; row < curRowSize; row++) {
+                    for (let col = 0; col < curColSize; col++) {
+                        if (col in holds[row]) {
+                            holds[row][2 * curColSize - col - 1] = holds[row][col]
+                        }
+                    }
+            }
+            curColSize *= 2
+            funcDrawTable()
+        })
+
+        $('#btnOpenDown').on('click', function () {
+            for (let col = 0; col < curColSize; col++) {
+                for (let row = 0; row < curRowSize; row++) {
+                    if (holds[2*curRowSize-row-1]==undefined)
+                    {
+                        holds[2*curRowSize-row-1]=[]
+                    }
+                    holds[2*curRowSize-row-1][col] = holds[row][col]
+                }
+            }
+            curRowSize *= 2
+            funcDrawTable()
+        })
+
+
+    </script>
+</body>
+
+</html>
